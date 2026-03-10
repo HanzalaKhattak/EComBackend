@@ -11,7 +11,26 @@ const app = express();
 app.use('/api/webhook', webhookRoutes);
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    const allowedOrigins = [
+      'http://localhost:5173',
+      process.env.FRONTEND_URL,
+    ].filter(Boolean);
+
+    // Allow requests with no origin (e.g. server-to-server, Postman)
+    if (!origin) return callback(null, true);
+
+    // Allow any Vercel deployment URL for the frontend project
+    if (
+      allowedOrigins.includes(origin) ||
+      /^https:\/\/e-commerce-website.*\.vercel\.app$/.test(origin)
+    ) {
+      return callback(null, true);
+    }
+
+    callback(new Error(`CORS blocked: ${origin}`));
+  },
+  credentials: true,
 }));
 app.use(express.json());
 

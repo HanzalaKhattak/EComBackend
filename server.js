@@ -31,6 +31,10 @@ app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
 
+app.get('/', (_req, res) => {
+  res.json({ status: 'ok', message: 'E-Commerce API is running.' });
+});
+
 // Only start the HTTP server when running locally (not on Vercel)
 if (process.env.NODE_ENV !== 'production') {
   const PORT = process.env.PORT || 5000;

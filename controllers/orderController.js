@@ -1,7 +1,9 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Order = require('../models/Order');
 
+const getStripe = () => require('stripe')(process.env.STRIPE_SECRET_KEY);
+
 const createPaymentIntent = async (req, res) => {
+  const stripe = getStripe();
   try {
     const { amount, currency = 'usd', customerInfo } = req.body;
 
@@ -29,6 +31,7 @@ const createPaymentIntent = async (req, res) => {
 };
 
 const saveOrder = async (req, res) => {
+  const stripe = getStripe();
   try {
     const { paymentIntentId, paymentMethodId, amount, currency, customerInfo, items, orderNotes } = req.body;
 

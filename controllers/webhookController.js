@@ -1,7 +1,9 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Order = require('../models/Order');
 
+const getStripe = () => require('stripe')(process.env.STRIPE_SECRET_KEY);
+
 const handleWebhook = async (req, res) => {
+  const stripe = getStripe();
   const sig = req.headers['stripe-signature'];
 
   if (!process.env.STRIPE_WEBHOOK_SECRET) {

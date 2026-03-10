@@ -17,8 +17,12 @@ app.use(express.json());
 
 // Connect to DB on every request (cached internally for serverless)
 app.use(async (_req, _res, next) => {
-  await connectDB().catch(next);
-  next();
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    next(err);
+  }
 });
 
 app.use('/api', orderRoutes);

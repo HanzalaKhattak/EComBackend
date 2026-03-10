@@ -15,7 +15,11 @@ const connectDB = async () => {
   if (cached.conn) return cached.conn;
 
   if (!cached.promise) {
-    cached.promise = mongoose.connect(process.env.MONGODB_URI).then((m) => {
+    cached.promise = mongoose.connect(process.env.MONGODB_URI, {
+      serverSelectionTimeoutMS: 10000,
+      socketTimeoutMS: 45000,
+      connectTimeoutMS: 10000,
+    }).then((m) => {
       console.log('MongoDB connected');
       return m;
     });
@@ -25,7 +29,8 @@ const connectDB = async () => {
     cached.conn = await cached.promise;
   } catch (err) {
     cached.promise = null;
-    console.error('MongoDB connection error:', err);
+    cached.conn = null;
+    console.error('MongoDB connection error:', err.message);
     throw err;
   }
 

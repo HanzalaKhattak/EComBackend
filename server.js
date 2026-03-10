@@ -15,7 +15,11 @@ app.use(cors({
 }));
 app.use(express.json());
 
-connectDB();
+// Connect to DB on every request (cached internally for serverless)
+app.use(async (_req, _res, next) => {
+  await connectDB().catch(next);
+  next();
+});
 
 app.use('/api', orderRoutes);
 
@@ -23,7 +27,12 @@ app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Only start the HTTP server when running locally (not on Vercel)
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+module.exports = app;
